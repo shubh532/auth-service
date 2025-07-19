@@ -2,6 +2,7 @@ package com.banking.auth_service.controller;
 
 import com.banking.auth_service.DTO.UserRegistrationRequest;
 import com.banking.auth_service.services.AuthService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(
-            @RequestBody UserRegistrationRequest user
+          @RequestBody @Valid UserRegistrationRequest user
 //            @RequestPart("document")MultipartFile documentFile
             ){
         String response = authService.registerUser(user);

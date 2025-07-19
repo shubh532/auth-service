@@ -1,8 +1,8 @@
 package com.banking.auth_service.exception;
 
-public class UserException extends RuntimeException {
+public class UserAlreadyExistException extends RuntimeException {
 
-    public UserException(String message){
+    public UserAlreadyExistException(String message){
         super(message);
     }
 }

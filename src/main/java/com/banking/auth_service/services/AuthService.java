@@ -2,11 +2,14 @@ package com.banking.auth_service.services;
 
 import com.banking.auth_service.DTO.UserRegistrationRequest;
 import com.banking.auth_service.entity.User;
+import com.banking.auth_service.exception.UserAlreadyExistException;
 import com.banking.auth_service.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -16,16 +19,17 @@ public class AuthService {
             UserRegistrationRequest user
             //MultipartFile doc
     ) {
+        log.info("Received user registration request: {}", user);
 
         System.out.println("Request Object :" + user.toString());
         //System.out.println("Document Object :" + doc);
 
         userRepo.findByEmail(user.getEmail()).ifPresent(u -> {
-            throw new RuntimeException("Email already registered");
+            throw new UserAlreadyExistException("Email already registered");
         });
 
         userRepo.findByMobile(user.getMobile()).ifPresent(u -> {
-            throw new RuntimeException("Mobile already registered");
+            throw new UserAlreadyExistException("Mobile already registered");
         });
 
         User userData = User.builder()
@@ -40,7 +44,7 @@ public class AuthService {
                 .build();
 
         userRepo.save(userData);
-
+        log.info("User registered successfully with email: {}", user.getEmail());
         return "User registered successfully";
     }
 }
