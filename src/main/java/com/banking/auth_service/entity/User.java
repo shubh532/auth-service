@@ -11,7 +11,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder(toBuilder = true)
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -40,4 +39,6 @@ public class User {
     @Column(nullable = false)
     private String documentPath;
 
+    @Column(nullable = false)
+    private String password;
 }

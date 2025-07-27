@@ -6,14 +6,15 @@ import com.banking.auth_service.exception.UserAlreadyExistException;
 import com.banking.auth_service.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class Registration {
     private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public String registerUser(
             UserRegistrationRequest user
@@ -32,6 +33,8 @@ public class AuthService {
             throw new UserAlreadyExistException("Mobile already registered");
         });
 
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        System.out.println("Encoded Password: "+encodedPassword);
         User userData = User.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
@@ -41,6 +44,7 @@ public class AuthService {
                 .address(user.getAddress())
                 .documentType(user.getDocumentType())
                 .documentPath("dummy/path")
+                .password(encodedPassword)
                 .build();
 
         userRepo.save(userData);

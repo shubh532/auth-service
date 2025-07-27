@@ -37,4 +37,7 @@ public class UserRegistrationRequest {
 
     @NotBlank(message = "Please select the document type")
     private String documentType;
+
+    @NotBlank(message = "Password is required")
+    private String password;
 }
