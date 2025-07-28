@@ -8,12 +8,10 @@ import java.time.LocalDate;
 
 @SpringBootApplication
 public class AuthServiceApplication {
-
 	public static void main(String[] args) {
 		System.out.println("Server Starting....");
 		SpringApplication.run(AuthServiceApplication.class, args);
 		System.out.println("Server Started....");
 
 	}
-
 }

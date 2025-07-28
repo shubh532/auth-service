@@ -1,9 +1,11 @@
 package com.banking.auth_service.controller;
 
 import com.banking.auth_service.DTO.LoginRequest;
+import com.banking.auth_service.DTO.LoginResponse;
 import com.banking.auth_service.DTO.UserRegistrationRequest;
 import com.banking.auth_service.services.Login;
 import com.banking.auth_service.services.Registration;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +34,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@RequestBody @Valid LoginRequest credentials) {
-
-        String str = login.loginUser(credentials);
-
-
-        return ResponseEntity.ok(str);
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody @Valid LoginRequest credentials, HttpServletResponse response) {
+        LoginResponse userRes = login.loginUser(credentials,response);
+        return ResponseEntity.ok(userRes);
     }
 
 }

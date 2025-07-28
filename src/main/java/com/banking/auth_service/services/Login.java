@@ -1,9 +1,14 @@
 package com.banking.auth_service.services;
 
 import com.banking.auth_service.DTO.LoginRequest;
+import com.banking.auth_service.DTO.LoginResponse;
+import com.banking.auth_service.DTO.UserProfileDto;
 import com.banking.auth_service.entity.User;
 import com.banking.auth_service.exception.InvalidCredentialsException;
 import com.banking.auth_service.repository.UserRepo;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,22 +22,33 @@ import java.util.Optional;
 public class Login {
 
     private final UserRepo userRepo;
-//    private final PasswordEncoder passwordEncoder;
+    private final JWTService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-    public String loginUser(LoginRequest credentials) {
+    public LoginResponse loginUser(LoginRequest credentials, HttpServletResponse response) {
 
         String emailOrMobile = credentials.getMobileOrEmail();
         User user = userRepo.findByMobileOrEmail(emailOrMobile).orElse(null);
         if (user == null) {
             throw new InvalidCredentialsException("Invalid credentials");
-
         }
 
+        if (!passwordEncoder.matches(credentials.getPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Incorrect password");
+        }
 
-        System.out.println("Credentials " + credentials);
+        String token = jwtService.generateToken(user.getEmail());
+        Cookie cookie = new jakarta.servlet.http.Cookie("jwt", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60);
+        response.addCookie(cookie);
 
-        return "User Login successfully..";
-
+        return LoginResponse.builder()
+                .message("Login Successful")
+                .User(UserProfileDto.userProfile(user))
+                .build();
     }
 
 }
