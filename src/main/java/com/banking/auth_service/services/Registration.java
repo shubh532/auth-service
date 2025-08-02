@@ -2,6 +2,7 @@ package com.banking.auth_service.services;
 
 import com.banking.auth_service.DTO.UserRegistrationRequest;
 import com.banking.auth_service.entity.User;
+import com.banking.auth_service.enums.Role;
 import com.banking.auth_service.exception.UserAlreadyExistException;
 import com.banking.auth_service.repository.UserRepo;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,7 @@ public class Registration {
                 .documentType(user.getDocumentType())
                 .documentPath("dummy/path")
                 .password(encodedPassword)
+                .role(Role.USER)
                 .build();
 
         userRepo.save(userData);
