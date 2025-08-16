@@ -28,12 +28,13 @@ public class JWTService {
     }
 
     public String generateToken(String username) {
-        return Jwts.builder()
+        String token = Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration((new Date(System.currentTimeMillis() + TOKEN_VALIDITY)))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+        return token;
     }
 
     public boolean validateToken(String token, String username) {
@@ -59,13 +60,17 @@ public class JWTService {
     }
 
     private Claims extractAllClaims(String token) {
+        System.out.println("Raw token received: " + token); // Add this line
         try {
-            return Jwts.parserBuilder()
+            Claims claims = Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
+            System.out.println("Claims: " + claims); // Log claims
+            return claims;
         } catch (JwtException e) {
+            System.err.println("JWT Validation failed: " + e.getMessage());
             throw new RuntimeException("Invalid JWT token", e);
         }
     }

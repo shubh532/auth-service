@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 @Slf4j
@@ -26,7 +28,6 @@ public class Login {
     private final PasswordEncoder passwordEncoder;
 
     public LoginResponse loginUser(LoginRequest credentials, HttpServletResponse response) {
-
         String emailOrMobile = credentials.getMobileOrEmail();
         User user = userRepo.findByMobileOrEmail(emailOrMobile).orElse(null);
         if (user == null) {
@@ -38,9 +39,13 @@ public class Login {
         }
 
         String token = jwtService.generateToken(user.getEmail());
-        Cookie cookie = new jakarta.servlet.http.Cookie("jwt", token);
+
+// URL encode the token before setting it in cookie
+        String encodedToken = URLEncoder.encode(token, StandardCharsets.UTF_8);
+
+        Cookie cookie = new jakarta.servlet.http.Cookie("jwt", encodedToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(true);  // Ensure this is true in production (HTTPS only)
         cookie.setPath("/");
         cookie.setMaxAge(24 * 60 * 60);
         response.addCookie(cookie);
